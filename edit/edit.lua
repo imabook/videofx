@@ -57,11 +57,11 @@ function start_pixel_change(dt, selection)
 	local inicio = os.clock()
 
 	for j, frame in ipairs(frames) do
-		dt_frame = dt:read(DT_COLUMNS * DT_ROWS / 2)
+		dt_frame = dt:read(math.floor(DT_COLUMNS * DT_ROWS / 2 + 0.5))
 		if not dt_frame then
 			-- ya no hay mas frames en el dataset, volver a la primera
 			dt:seek("set", 4)
-			dt_frame = dt:read(DT_COLUMNS * DT_ROWS / 2)
+			dt_frame = dt:read(math.floor(DT_COLUMNS * DT_ROWS / 2 + 0.5))
 		end
 
 		dt_frame = { dt_frame:byte(1, -1) }

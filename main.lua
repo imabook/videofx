@@ -69,7 +69,8 @@ until dt
 clear_output()
 if (DT_FRAMES < VIDEO_FRAMES) then
 	print_e()
-	print_e("el archivo tiene menos frames que el video que se va a procesar")
+	print_e("el archivo tiene menos frames que el video que se va a procesar " ..
+		with_color("(" .. DT_FRAMES .. " vs " .. VIDEO_FRAMES .. ")", Color.YELLOW))
 	print_e("no hay ningun problema, solo que se pondra en bucle el .fdt")
 	print_e()
 end
