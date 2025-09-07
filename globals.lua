@@ -19,3 +19,6 @@ DT_ROWS = nil         -- el height de la simulacion
 DT_FRAMES = nil       -- el numero de frames de la simulacion
 
 CABECERA = nil        -- los bytes que ocupa la cabecera del .ppm
+
+-- OTRAS GLOBALES
+RANDOM_SEED = os.time()

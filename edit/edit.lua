@@ -71,15 +71,16 @@ function start_pixel_change(dt, selection)
 			local v = ALGORITHMS[selection or 1](pixel, dt_frame, V_COLUMNS, V_ROWS, DT_COLUMNS, DT_ROWS)
 
 			if v == 15 or pixel == V_COLUMNS * V_ROWS then
-				print("final v = " .. v) -- no deberia de entrar aqui
-				break
+				-- print("final v = " .. v) -- no deberia de entrar aqui
+				-- break
 			end
 
 			if v ~= 0 then
 				local indice = ((j + v - 1) % #frames) + 1 -- para que haga wrap arround
 				-- local indice = ((math.random(-10, 10) - 1) % #frames) + 1 -- para que haga wrap arround
 				-- local indice = j
-				update_pixel(frame, frames[indice], pixel)
+				-- update_pixel(frame, frames[indice], pixel)
+				update_pixel_overlay(frame, frames[indice], pixel)
 			end
 
 			pixel = pixel + 1

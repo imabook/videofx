@@ -23,6 +23,15 @@ function update_pixel(frame_dest, frame_orig, i)
 	-- end
 end
 
+function update_pixel_overlay(frame_dest, frame_orig, i)
+	i = 3 * i + CABECERA
+
+	frame_dest[i] = math.floor((frame_orig[i] + frame_dest[i]) / 2 + 0.5)          -- R
+	frame_dest[i + 1] = math.floor((frame_orig[i + 1] + frame_dest[i + 1]) / 2 + 0.5) -- G
+	frame_dest[i + 2] = math.floor((frame_orig[i + 2] + frame_dest[i + 2]) / 2 + 0.5) -- B
+	-- end
+end
+
 function floor_interpolation(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
 	local x = math.floor(p % v_cols)
 	local y = math.floor(p / v_cols)
@@ -75,4 +84,16 @@ function bilinear(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
 	return math.floor(lerp(top, bottom, wy) + 0.5)
 end
 
-return { floor_interpolation, nearest_neighbour, bilinear }
+function random_interpolation(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- random por bloques
+	local x = math.floor(p % v_cols)
+	local y = math.floor(p / v_cols)
+
+	local dt_x = math.floor(x * (dt_cols - 1) / (v_cols - 1))
+	local dt_y = math.floor(y * (dt_rows - 1) / (v_rows - 1))
+
+	math.randomseed(RANDOM_SEED + dt_x + dt_y * dt_cols)
+	return math.random(VIDEO_FRAMES + 1) - 1
+end
+
+return { floor_interpolation, nearest_neighbour, bilinear, random_interpolation }

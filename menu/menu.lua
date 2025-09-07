@@ -88,11 +88,15 @@ function print_interpolation_menu()
 		print_e("1. " .. with_color("floor interpolation", Color.CYAN))
 		print_e("2. " .. with_color("nearest neighbour", Color.CYAN))
 		print_e("3. " .. with_color("bilinear interpolation", Color.CYAN))
+		print_e("4. " .. with_color("random interpolation", Color.CYAN))
 
 		print_e()
 		print_e("elige un metodo de interpolacion: ", false)
 		selection = tonumber(io.read()) or 0
-		if selection < 1 or selection > 3 then selection = nil end
+		if selection < 1 or selection > 4 then
+			clear_output()
+			selection = nil
+		end
 	until selection
 
 	return selection
