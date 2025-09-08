@@ -88,12 +88,14 @@ function print_interpolation_menu()
 		print_e("1. " .. with_color("floor interpolation", Color.CYAN))
 		print_e("2. " .. with_color("nearest neighbour", Color.CYAN))
 		print_e("3. " .. with_color("bilinear interpolation", Color.CYAN))
-		print_e("4. " .. with_color("random interpolation", Color.CYAN))
-
+		print_e("4. " .. with_color("all random interpolation", Color.CYAN))
+		print_e("5. " .. with_color("partial random interpolation", Color.CYAN))
+		print_e("6. " .. with_color("all random per frame interpolation", Color.CYAN))
+		print_e("7. " .. with_color("partial random per frame interpolation", Color.CYAN))
 		print_e()
 		print_e("elige un metodo de interpolacion: ", false)
 		selection = tonumber(io.read()) or 0
-		if selection < 1 or selection > 4 then
+		if selection < 1 or selection > 7 then
 			clear_output()
 			selection = nil
 		end

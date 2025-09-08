@@ -32,16 +32,27 @@ function update_pixel_overlay(frame_dest, frame_orig, i)
 	-- end
 end
 
-function floor_interpolation(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+function transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
 	local x = math.floor(p % v_cols)
 	local y = math.floor(p / v_cols)
 
 	local dt_x = math.floor(x * (dt_cols - 1) / (v_cols - 1))
 	local dt_y = math.floor(y * (dt_rows - 1) / (v_rows - 1))
 
+	return dt_x, dt_y, dt_x + dt_y * dt_cols
+end
+
+function floor_interpolation(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- local x = math.floor(p % v_cols)
+	-- local y = math.floor(p / v_cols)
+
+	-- local dt_x = math.floor(x * (dt_cols - 1) / (v_cols - 1))
+	-- local dt_y = math.floor(y * (dt_rows - 1) / (v_rows - 1))
+
 	-- print("a las coordenadas del video (" .. x .. ", " .. y .. ") se le asignan (" .. dt_x .. ", " .. dt_y .. ")")
 
-	local dt_p = dt_x + dt_y * dt_cols
+	local _, _, dt_p = transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
+
 	return get_value(dt_frame, dt_p)
 end
 
@@ -84,16 +95,52 @@ function bilinear(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
 	return math.floor(lerp(top, bottom, wy) + 0.5)
 end
 
-function random_interpolation(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
-	-- random por bloques
-	local x = math.floor(p % v_cols)
-	local y = math.floor(p / v_cols)
-
-	local dt_x = math.floor(x * (dt_cols - 1) / (v_cols - 1))
-	local dt_y = math.floor(y * (dt_rows - 1) / (v_rows - 1))
-
-	math.randomseed(RANDOM_SEED + dt_x + dt_y * dt_cols)
+function random_frame(seed)
+	math.randomseed(seed)
 	return math.random(VIDEO_FRAMES + 1) - 1
 end
 
-return { floor_interpolation, nearest_neighbour, bilinear, random_interpolation }
+function all_random(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- random por bloques ignorando el fdt siendo consistente
+	-- siguen la interpolacion vecino proximo (floor int.)
+
+	local _, _, dt_p = transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
+
+	return random_frame(RANDOM_SEED + dt_p)
+end
+
+function partial_random(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- random por bloques dependiendo del valor en el fdt siendo consistente
+	-- siguen la interpolacion vecino proximo (floor int.)
+	local _, _, dt_p = transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
+	if get_value(dt_frame, dt_p) == 0 then
+		return 0
+	end
+
+	return random_frame(RANDOM_SEED + dt_p)
+end
+
+function all_random_per_frame(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- random por bloques ignorando sin ser consistente
+	-- siguen la interpolacion vecino proximo (floor int.)
+	local _, _, dt_p = transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
+	local v = get_value(dt_frame, dt_p)
+
+	return random_frame(RANDOM_SEED * v + dt_p)
+end
+
+function partial_random_per_frame(p, dt_frame, v_cols, v_rows, dt_cols, dt_rows)
+	-- random por bloques dependiendo del valor en el fdt sin ser consistente entre frames (por fdt)
+	-- siguen la interpolacion vecino proximo (floor int.)
+	local _, _, dt_p = transform_coords_floor(p, v_cols, v_rows, dt_cols, dt_rows)
+	local v = get_value(dt_frame, dt_p)
+
+	if v == 0 then
+		return 0
+	end
+
+	return random_frame(RANDOM_SEED * v + dt_p)
+end
+
+return { floor_interpolation, nearest_neighbour, bilinear, all_random, partial_random, all_random_per_frame,
+	partial_random_per_frame }
